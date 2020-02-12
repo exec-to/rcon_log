@@ -40,17 +40,24 @@ function main()
     for ip in ${IP_LIST}; do
       valid_ip ${ip};
       valid=$?
-      if [ ! ${valid} ]; then
+      if [ "${valid}" -ne "0" ]; then
         echo "IP is not valid: ${ip}" >> "${RCON_HOME}/var/rcon.log";
         continue;
       fi;
 
       ip_exist=$(mysql -u${MYSQL_USER} -p${MYSQL_PASS} $MYSQL_DB -s -N -e "SELECT count(*) FROM updates WHERE ipaddr = '${ip}';" 2>>"${RCON_HOME}/var/rcon.log");
       if [ ${ip_exist} -eq "0" ]; then
-        mysql -u${MYSQL_USER} -p${MYSQL_PASS} $MYSQL_DB -e "INSERT INTO \`updates\` (\`gamehost\`, \`gameport\`, \`ipaddr\`, \`state\`, \`userid\`) \
-        VALUES ('${gamehost}', ${gameport}, '${ip}', FALSE, '${userid}');" 2>>"${RCON_HOME}/var/rcon.log";
+        mysql -u${MYSQL_USER} -p${MYSQL_PASS} $MYSQL_DB -e "INSERT INTO \`updates\` (\`gamehost\`, \`gameport\`, \`ipaddr\`) \
+        VALUES ('${gamehost}', ${gameport}, '${ip}');" 2>>"${RCON_HOME}/var/rcon.log";
+	
+	subnet="$(echo ${ip} | cut -d'.' -f1,2,3).0/24";
+ 	subnet_exist=$(mysql -u${MYSQL_USER} -p${MYSQL_PASS} $MYSQL_DB -s -N -e "SELECT count(*) FROM ipset_rules WHERE subnet = '${subnet}';" 2>>"${RCON_HOME}/var/rcon.log");
+	if [ ${subnet_exist} -eq "0" ]; then
+          mysql -u${MYSQL_USER} -p${MYSQL_PASS} $MYSQL_DB -e "INSERT INTO \`ipset_rules\` (\`gamehost\`, \`gameport\`, \`subnet\`, \`state\`, \`userid\`) \
+          VALUES ('${gamehost}', ${gameport}, '${subnet}', FALSE, '${userid}');" 2>>"${RCON_HOME}/var/rcon.log";
+        fi;
       fi;
-   
+
     done;
   done;
 }

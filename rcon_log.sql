@@ -16,6 +16,24 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `ipset_rules`
+--
+
+DROP TABLE IF EXISTS `ipset_rules`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ipset_rules` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `gamehost` varchar(16) DEFAULT NULL,
+  `gameport` int(11) NOT NULL DEFAULT '0',
+  `subnet` varchar(20) NOT NULL,
+  `state` tinyint(1) NOT NULL,
+  `userid` varchar(10) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=158 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `updates`
 --
 
@@ -27,11 +45,9 @@ CREATE TABLE `updates` (
   `gamehost` varchar(16) DEFAULT NULL,
   `gameport` int(11) NOT NULL DEFAULT '0',
   `ipaddr` varchar(15) NOT NULL,
-  `state` tinyint(1) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `userid` varchar(10) NOT NULL DEFAULT 'rcon_all',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=133 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=169 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -43,4 +59,4 @@ CREATE TABLE `updates` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-02-12 11:02:29
+-- Dump completed on 2020-02-12 13:25:27
