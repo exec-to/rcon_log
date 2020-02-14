@@ -11,7 +11,7 @@ IPT="/sbin/iptables";
 
 IPSET="/sbin/ipset";
 
-mysql -u${MYSQL_USER} -p${MYSQL_PASS} $MYSQL_DB -s -N -e "select id, gamehost, subnet, userid from ipset_rules where state = 0;" > ${RULES} 2>/dev/null;
+mysql -h${MYSQL_HOST} -u${MYSQL_USER} -p${MYSQL_PASS} $MYSQL_DB -s -N -e "select id, gamehost, subnet, userid from ipset_rules where state = 0;" > ${RULES} 2>/dev/null;
 while IFS= read -r rule
 do
         id=$(echo "${rule}" | awk '{print $1}')
@@ -34,6 +34,12 @@ if [ "$?" -ne "0" ]; then
   for dns_subnet in ${dns}; do
     ${IPSET} -A "${chain}-ipset" "${dns_subnet}"
   done;
+  
+  custom=$(cat ${RCON_HOME}/etc/custom_net)
+  for custom_subnet in ${custom}; do
+    ${IPSET} -A "${chain}-ipset" "${custom_subnet}"
+  done;
+
 fi;
 
 # add subnet to ipset chain
@@ -57,6 +63,6 @@ if [ "$?" -ne "0" ]; then
 fi;
 
 # update mysql state
-mysql -u${MYSQL_USER} -p${MYSQL_PASS} $MYSQL_DB -e "UPDATE ipset_rules SET state = 1 WHERE id = ${id}" 2>/dev/null;
+mysql -h${MYSQL_HOST} -u${MYSQL_USER} -p${MYSQL_PASS} $MYSQL_DB -e "UPDATE ipset_rules SET state = 1 WHERE id = ${id}" 2>/dev/null;
 done < "${RULES}"
 
